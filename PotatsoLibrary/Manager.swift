@@ -34,7 +34,7 @@ public let kProxyServiceVPNStatusNotification = "kProxyServiceVPNStatusNotificat
 
 open class Manager {
     
-    open static let sharedManager = Manager()
+    public static let sharedManager = Manager()
     
     open fileprivate(set) var vpnStatus = VPNStatus.off {
         didSet {
@@ -42,7 +42,7 @@ open class Manager {
         }
     }
     
-    open let wormhole = MMWormhole(applicationGroupIdentifier: Potatso.sharedGroupIdentifier(), optionalDirectory: "wormhole")
+    public let wormhole = MMWormhole(applicationGroupIdentifier: Potatso.sharedGroupIdentifier(), optionalDirectory: "wormhole")
 
     var observerAdded: Bool = false
     
@@ -288,7 +288,19 @@ extension Manager {
         let confURL = Potatso.sharedProxyConfUrl()
         var content = ""
         if let upstreamProxy = upstreamProxy, upstreamProxy.type == .Shadowsocks || upstreamProxy.type == .ShadowsocksR {
-            let arr = ["host": upstreamProxy.host, "port": upstreamProxy.port, "password": upstreamProxy.password ?? "", "authscheme": upstreamProxy.authscheme ?? "", "ota": upstreamProxy.ota, "protocol": upstreamProxy.ssrProtocol ?? "", "obfs": upstreamProxy.ssrObfs ?? "", "obfs_param": upstreamProxy.ssrObfsParam ?? ""] as [String : Any]
+            let arr = ["host": upstreamProxy.host,
+                       "port": upstreamProxy.port,
+                       "password": upstreamProxy.password ?? "",
+                       "authscheme": upstreamProxy.authscheme ?? "",
+                       "ota": upstreamProxy.ota,
+                       "protocol": upstreamProxy.ssrProtocol ?? "",
+                       "protocol_param": upstreamProxy.ssrProtocolParam ?? "",
+                       "obfs": upstreamProxy.ssrObfs ?? "",
+                       "obfs_param": upstreamProxy.ssrObfsParam ?? "",
+                       "ot_enable": upstreamProxy.ssrotEnable,
+                       "ot_domain": upstreamProxy.ssrotDomain ?? "",
+                       "ot_path": upstreamProxy.ssrotPath ?? "",
+                ] as [String : Any]
             
             do {
                 //let data = try JSONSerialization.data(withJSONObject: arr, options: .prettyPrinted)

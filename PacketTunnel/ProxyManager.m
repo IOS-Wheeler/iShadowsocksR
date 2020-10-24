@@ -74,6 +74,9 @@ struct server_config * build_config_object(Profile *profile, unsigned short list
     string_safe_assign(&config->protocol_param, profile.protocolParam.UTF8String);
     string_safe_assign(&config->obfs, profile.obfs.UTF8String);
     string_safe_assign(&config->obfs_param, profile.obfsParam.UTF8String);
+    config->over_tls_enable = (profile.ot_enable != NO);
+    string_safe_assign(&config->over_tls_server_domain, profile.ot_domain.UTF8String);
+    string_safe_assign(&config->over_tls_path, profile.ot_path.UTF8String);
     
     return config;
 }
@@ -83,6 +86,7 @@ struct ssr_client_state *g_state = NULL;
 void feedback_state(struct ssr_client_state *state, void *p) {
     g_state = state;
     shadowsocks_handler(ssr_get_listen_socket_fd(state), p);
+    state_set_force_quit(state, true);
 }
 
 void info_callback(const char *info, void *p) {
@@ -110,6 +114,8 @@ void ssr_main_loop(Profile *profile, unsigned short listenPort, const char *appP
         }
         
 #if USING_SSR_NATIVE
+        config_ssrot_revision(config);
+        
         set_app_name(appPath);
         [DDLog addLogger:[DDASLLogger sharedInstance]]; // ASL = Apple System Logs
         set_dump_info_callback(&info_callback, context);
